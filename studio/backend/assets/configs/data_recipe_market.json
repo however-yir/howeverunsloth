@@ -1,0 +1,23 @@
+[
+  {
+    "id": "customer-support-qa",
+    "name": "客服问答增强",
+    "industry": "customer-support",
+    "description": "将 FAQ、工单、知识库转换为训练样本",
+    "recommended_provider": "ollama"
+  },
+  {
+    "id": "code-review-assistant",
+    "name": "代码评审助手",
+    "industry": "software-engineering",
+    "description": "将代码规范和评审意见模板转换为监督数据",
+    "recommended_provider": "openai"
+  },
+  {
+    "id": "sales-playbook",
+    "name": "销售话术增强",
+    "industry": "sales",
+    "description": "结合产品文档与优秀话术生成多轮销售训练数据",
+    "recommended_provider": "vllm"
+  }
+]

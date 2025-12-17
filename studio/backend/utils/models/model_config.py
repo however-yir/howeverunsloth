@@ -760,8 +760,8 @@ def _is_vision_model_uncached(
 
     except Exception as e:
         logger.warning(f"Could not determine if {model_name} is vision model: {e}")
-        # Permanent failures (model not found, gated, bad config) should be
-        # cached as False. Transient failures (network, timeout) should not.
+        # Treat detection failures as non-vision to preserve fail-closed behavior
+        # and avoid retry storms for repeatedly queried broken/unreachable models.
         try:
             from huggingface_hub.errors import RepositoryNotFoundError, GatedRepoError
         except ImportError:
@@ -778,7 +778,7 @@ def _is_vision_model_uncached(
             return False
         if isinstance(e, (ValueError, json.JSONDecodeError)):
             return False
-        return None
+        return False
 
 
 VALID_AUDIO_TYPES = ("snac", "csm", "bicodec", "dac", "whisper", "audio_vlm")

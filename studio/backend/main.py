@@ -53,10 +53,12 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, HTMLResponse, Response
 from pathlib import Path
 from datetime import datetime
+from core.project_profile import get_project_profile, get_public_profile_dict
 
 # Import routers
 from routes import (
     auth_router,
+    config_management_router,
     data_recipe_router,
     datasets_router,
     export_router,
@@ -65,6 +67,7 @@ from routes import (
     training_history_router,
     training_router,
 )
+from core.errors import install_error_handlers
 from auth import storage
 from auth.authentication import get_current_subject
 from utils.hardware import (
@@ -138,10 +141,12 @@ async def lifespan(app: FastAPI):
 
 
 # Create FastAPI app
+_PROJECT_PROFILE = get_project_profile()
+
 app = FastAPI(
-    title = "Unsloth UI Backend",
+    title = f"{_PROJECT_PROFILE.project_display_name} Backend",
     version = "1.0.0",
-    description = "Backend API for Unsloth UI - Training and Model Management",
+    description = _PROJECT_PROFILE.project_description,
     lifespan = lifespan,
 )
 
@@ -150,7 +155,7 @@ from loggers.config import LogConfig
 from loggers.handlers import LoggingMiddleware
 
 logger = LogConfig.setup_logging(
-    service_name = "unsloth-studio-backend",
+    service_name = f"{get_project_profile().project_name}-backend",
     env = os.getenv("ENVIRONMENT_TYPE", "production"),
 )
 
@@ -183,6 +188,8 @@ app.include_router(export_router, prefix = "/api/export", tags = ["export"])
 app.include_router(
     training_history_router, prefix = "/api/train", tags = ["training-history"]
 )
+app.include_router(config_management_router, prefix = "/api/config", tags = ["config"])
+install_error_handlers(app)
 
 
 # ============ Health and System Endpoints ============
@@ -197,10 +204,16 @@ async def health_check():
     return {
         "status": "healthy",
         "timestamp": datetime.now().isoformat(),
-        "service": "Unsloth UI Backend",
+        "service": _PROJECT_PROFILE.project_display_name,
         "device_type": device_type,
         "chat_only": _hw_module.CHAT_ONLY,
     }
+
+
+@app.get("/api/project-profile")
+async def project_profile():
+    """Expose sanitized project profile for frontend/about pages."""
+    return get_public_profile_dict(_PROJECT_PROFILE)
 
 
 @app.post("/api/shutdown")

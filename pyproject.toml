@@ -5,11 +5,11 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "unsloth"
 dynamic = ["version"]
-description = "2-5X faster training, reinforcement learning & finetuning"
+description = "Private model training, inference and reinforcement learning platform"
 readme = "README.md"
 requires-python = ">=3.9,<3.15"
 license = "Apache-2.0"
-keywords = ["ai", "llm", "reinforcement learning", "machine learning", "artificial intelligence", "pytorch"]
+keywords = ["howeverunsloth", "llm", "reinforcement learning", "machine learning", "pytorch", "local-llm"]
 authors = [
     {email = "info@unsloth.ai"},
     {name = "Unsloth AI team"},

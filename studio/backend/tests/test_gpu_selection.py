@@ -444,6 +444,7 @@ class TestGpuAutoSelection(_GpuCacheResetMixin, unittest.TestCase):
 
     def test_prepare_gpu_selection_preserves_explicit_ids_without_auto_selection(self):
         with (
+            patch("utils.hardware.hardware.get_device", return_value = DeviceType.CUDA),
             patch(
                 "utils.hardware.hardware.resolve_requested_gpu_ids",
                 return_value = [2, 3],

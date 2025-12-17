@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="260" viewBox="0 0 1200 260" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="260" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#102A43"/>
+      <stop offset="1" stop-color="#1B4332"/>
+    </linearGradient>
+    <linearGradient id="badge" x1="0" y1="0" x2="160" y2="160" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2EC4B6"/>
+      <stop offset="1" stop-color="#06D6A0"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="1184" height="244" rx="28" fill="url(#bg)" stroke="#2E5266" stroke-width="2"/>
+  <rect x="42" y="50" width="160" height="160" rx="24" fill="url(#badge)"/>
+  <path d="M96 102h52c20 0 36 16 36 36v20h-28v-16c0-8-6-14-14-14h-18v72H96v-98z" fill="#0B132B"/>
+  <circle cx="154" cy="92" r="10" fill="#0B132B"/>
+  <text x="238" y="122" fill="#EAF4F4" font-size="64" font-family="Figtree, Segoe UI, Arial" font-weight="700">HoweverUnsloth</text>
+  <text x="238" y="176" fill="#BEE3DB" font-size="30" font-family="Figtree, Segoe UI, Arial" font-weight="500">Private LLM Training and Inference Platform</text>
+</svg>
