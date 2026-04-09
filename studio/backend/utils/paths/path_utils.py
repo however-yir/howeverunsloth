@@ -164,10 +164,21 @@ def resolve_cached_repo_id_case(model_name: str, use_memo: bool = True) -> str:
 
     expected_dir = f"models--{model_name.replace('/', '--')}"
 
-    # Always check the exact-case path first so a newly-appeared exact match
-    # wins over any previously memoized variant.
-    exact_path = cache_dir / expected_dir
-    if exact_path.is_dir():
+    # On case-insensitive filesystems (common on macOS), Path.is_dir() can
+    # return True even when only a differently-cased variant exists.
+    # Require an exact entry-name match to avoid false "exact" hits.
+    exact_case_match = False
+    try:
+        exact_case_match = any(
+            entry.is_dir() and entry.name == expected_dir for entry in cache_dir.iterdir()
+        )
+    except Exception:
+        # Fall back to best-effort stat check.
+        exact_case_match = (cache_dir / expected_dir).is_dir()
+
+    # Always check exact-case first so a newly-appeared exact match wins over
+    # any previously memoized variant.
+    if exact_case_match:
         if use_memo:
             _CACHE_CASE_RESOLUTION_MEMO[model_name] = model_name
         _CACHE_CASE_RESOLUTION_STATS["exact_hits"] += 1
@@ -203,7 +214,10 @@ def resolve_cached_repo_id_case(model_name: str, use_memo: bool = True) -> str:
         if candidates:
             # Deterministic tie-break if multiple case variants coexist.
             resolved = sorted(candidates)[0]
-            if len(candidates) > 1:
+            mixed_case_request = (
+                model_name != model_name.lower() and model_name != model_name.upper()
+            )
+            if len(candidates) > 1 or (len(candidates) == 1 and mixed_case_request):
                 _CACHE_CASE_RESOLUTION_STATS["tie_breaks"] += 1
             _CACHE_CASE_RESOLUTION_STATS["variant_hits"] += 1
             if use_memo:

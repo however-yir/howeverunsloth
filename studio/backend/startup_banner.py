@@ -38,6 +38,7 @@ def print_studio_access_banner(
     port: int,
     bind_host: str,
     display_host: str,
+    project_name: str = "Unsloth Studio",
 ) -> None:
     """Pretty-print URLs after the server is listening (beginner-friendly)."""
     use_color = stdout_supports_color()
@@ -73,7 +74,7 @@ def print_studio_access_banner(
 
     lines: list[str] = [
         "",
-        style("🦥 Unsloth Studio is running", title),
+        style(f"🦥 {project_name} is running", title),
         style("─" * 52, dim),
         style("  On this machine -- open this in your browser:", dim),
         style(f"    {primary_url}", local_url_style),

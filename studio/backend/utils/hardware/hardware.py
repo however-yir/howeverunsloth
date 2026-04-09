@@ -263,14 +263,18 @@ def log_gpu_memory(context: str):
         backend = memory_info.get("backend", "unknown").upper()
         device_name = memory_info.get("device_name", "")
         label = f"{backend}" + (f" ({device_name})" if device_name else "")
-        logger.info(
+        message = (
             f"GPU Memory [{context}] {label}: "
             f"{memory_info['allocated_gb']:.2f}GB/{memory_info['total_gb']:.2f}GB "
             f"({memory_info['utilization_pct']:.1f}% used, "
             f"{memory_info['free_gb']:.2f}GB free)"
         )
+        logger.info(message)
+        print(message)
     else:
-        logger.info(f"GPU Memory [{context}]: No GPU available (CPU-only)")
+        message = f"GPU Memory [{context}]: No GPU available (CPU-only)"
+        logger.info(message)
+        print(message)
 
 
 # ========== GPU Summary & Package Versions ==========
@@ -332,7 +336,10 @@ def get_package_versions() -> Dict[str, Optional[str]]:
 def _torch_get_device_module():
     """Return the appropriate torch device module (cuda or xpu) and its name."""
     device = get_device()
-    import torch
+    try:
+        import torch
+    except Exception:
+        return None, None
 
     if device == DeviceType.CUDA:
         return torch.cuda, "cuda"
@@ -897,6 +904,14 @@ def auto_select_gpu_ids(
 ) -> tuple[Optional[list[int]], Dict[str, Any]]:
     metadata: Dict[str, Any] = {"selection_mode": "auto"}
 
+    parent_visible_spec = _get_parent_visible_gpu_spec()
+    metadata["parent_cuda_visible_devices"] = parent_visible_spec["raw"]
+
+    if not parent_visible_spec["supports_explicit_gpu_ids"]:
+        metadata["selection_mode"] = "inherit_parent_visible"
+        metadata["selected_gpu_ids"] = None
+        return None, metadata
+
     if get_device() != DeviceType.CUDA:
         metadata["selection_mode"] = "non_cuda"
         return None, metadata
@@ -914,14 +929,6 @@ def auto_select_gpu_ids(
         optimizer = optimizer,
     )
     metadata.update(estimate_metadata)
-    parent_visible_spec = _get_parent_visible_gpu_spec()
-    metadata["parent_cuda_visible_devices"] = parent_visible_spec["raw"]
-
-    if not parent_visible_spec["supports_explicit_gpu_ids"]:
-        metadata["selection_mode"] = "inherit_parent_visible"
-        metadata["selected_gpu_ids"] = None
-        return None, metadata
-
     if required_gb is None:
         # Cannot estimate model size -- fall back to all visible GPUs
         # rather than risk loading on a single GPU that may not have

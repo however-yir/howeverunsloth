@@ -74,7 +74,21 @@ class LoggingMiddleware(BaseHTTPMiddleware):
 def filter_sensitive_data(logger, method_name, event_dict):
     """Structlog processor to filter out base64 data from logs."""
 
-    def filter_value(value):
+    sensitive_keys = {
+        "password",
+        "token",
+        "api_key",
+        "secret",
+        "authorization",
+        "openai_api_key",
+        "hf_token",
+        "wandb_api_key",
+    }
+
+    def filter_value(key, value):
+        key_lower = str(key).lower()
+        if any(s in key_lower for s in sensitive_keys):
+            return "****"
         if (
             isinstance(value, str)
             and len(value) > 100
@@ -83,12 +97,12 @@ def filter_sensitive_data(logger, method_name, event_dict):
             # Likely base64 data, truncate it
             return value[:20] + "..."
         elif isinstance(value, dict):
-            return {k: filter_value(v) for k, v in value.items()}
+            return {k: filter_value(k, v) for k, v in value.items()}
         elif isinstance(value, list):
-            return [filter_value(item) for item in value]
+            return [filter_value(key, item) for item in value]
         return value
 
-    return {k: filter_value(v) for k, v in event_dict.items()}
+    return {k: filter_value(k, v) for k, v in event_dict.items()}
 
 
 def get_logger(name: str) -> structlog.BoundLogger:

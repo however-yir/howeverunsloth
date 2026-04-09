@@ -1,0 +1,21 @@
+project_name: howeverunsloth
+project_display_name: HoweverUnsloth Studio
+tagline: Private LLM training and inference platform
+repo_description: 私有化模型训练、推理与数据配方平台（基于 Unsloth 二次工程化）
+logo_path: docs/assets/howeverunsloth-logo.svg
+topics:
+  - howeverunsloth
+  - llm
+  - finetuning
+  - inference
+  - local-llm
+  - ollama
+  - rag
+  - tool-calling
+  - model-serving
+  - ai-platform
+naming_rules:
+  package_style: lowercase_with_underscores
+  java_group_id_pattern: com.<org>.<project>
+  python_import_name: unsloth
+  python_distribution_name: unsloth

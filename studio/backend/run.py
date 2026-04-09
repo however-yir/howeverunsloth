@@ -25,6 +25,7 @@ import _platform_compat  # noqa: F401
 
 from loggers import get_logger
 from startup_banner import print_studio_access_banner
+from core.project_profile import get_project_profile
 
 logger = get_logger(__name__)
 
@@ -356,10 +357,12 @@ def run_server(
 
     if not silent:
         display_host = _resolve_external_ip() if host == "0.0.0.0" else host
+        profile = get_project_profile()
         print_studio_access_banner(
             port = port,
             bind_host = host,
             display_host = display_host,
+            project_name = profile.project_display_name,
         )
 
     return app
@@ -378,7 +381,9 @@ if __name__ == "__main__":
         except Exception:
             pass
 
-    parser = argparse.ArgumentParser(description = "Run Unsloth UI Backend server")
+    parser = argparse.ArgumentParser(
+        description = f"Run {get_project_profile().project_display_name} backend server"
+    )
     parser.add_argument("--host", default = "0.0.0.0", help = "Host to bind to")
     parser.add_argument("--port", type = int, default = 8888, help = "Port to bind to")
     parser.add_argument(
