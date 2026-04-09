@@ -1,4 +1,4 @@
-# HoweverUnsloth
+# HoweverUnsloth - 私有化模型训练与推理平台 | Private LLM Training & Inference Platform
 
 ![HoweverUnsloth Logo](docs/assets/howeverunsloth-logo.svg)
 
